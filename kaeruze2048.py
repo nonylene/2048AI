@@ -357,6 +357,7 @@ def hen(grid,gridr):
 		i  = random.randint(0,len(zero)-1)
 		gridtem[i] = copy.deepcopy(grid)
 		gridtem[i][zero[i][0]][zero[i][1]] = 2
+		print(gridtem)
 		return(gridtem[i])
 	else:
 		return(grid)

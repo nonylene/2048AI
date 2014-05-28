@@ -294,8 +294,8 @@ def move(r,url):
 		r = random.randint(0,3)
 		move(r,url)
 
-
 def hen(grid,gridr):
+	#ランダムに2を入れて返す関数
 	global zero
 	if len(zero) != 0 and grid != gridr:
 		gridtem =[0]*len(zero)
@@ -305,8 +305,6 @@ def hen(grid,gridr):
 		return(gridtem[i])
 	else:
 		return(grid)
-
-
 
 if __name__ == "__main__":
 	u = 0
