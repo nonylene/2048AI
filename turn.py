@@ -1,7 +1,8 @@
+
 # -*- coding: utf-8 -*-
 import copy
 
-class Grid:
+class Turn:
 	def right(self):
 		#右は1です
 		zero = []
@@ -128,8 +129,9 @@ class Grid:
 		for i in range(0,len(zero)):
 			zero[i].reverse()
 		return gridt
-
-grid = Grid()
-grid.grid = () #このへんで呼び出し
+		
+if __name__=="__main__":
+	grid = Turn()
+	grid.grid = () #このへんで呼び出し
 
 #print(grid.right())っていうかんじで
