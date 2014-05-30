@@ -42,7 +42,6 @@ if mode == 1:
 
 elif mode == 2:
 	from kaeruze2048hybrid import yaruze
-
 	for i in range(0,count):
 		print (str(i+1) + "回目" + "\n")
 		yaruze(url)
@@ -66,7 +65,6 @@ elif mode == 3:
 	for i in range(0,count):
 		print (str(i+1) + "回目" + "\n")
 		yaruze(url)
-		time.sleep(1.5)
 	filex = open('shut.txt', mode = 'a')
 	file = open("shutz.txt", mode ='r')
 	filex.write("\n--hyb3\n")

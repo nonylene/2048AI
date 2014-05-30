@@ -26,11 +26,16 @@ class Grid:
 				for j in range(0,loop):
 					#loop回先読みする。先読みした項の数から考えていく
 					estlist[i] = self.assem(estlist[i])
-			hyolist[i] = [len(estlist[i]),i]
-		hyolist.sort()
-		hyolist.reverse()
-		print(hyolist)
-		r = hyolist[0][1]
+				if estlist[i] != []:
+					for j in range(len(estlist[i])):
+						estlist[i][j] = self.count(estlist[i][j])
+					estlist[i] = [max(estlist[i]),len(estlist[i]),i]
+			else:
+				estlist[i] = [0,0,i]
+		estlist.sort()
+		estlist.reverse()
+		print(estlist)
+		r = estlist[0][2]
 		return(r)
 
 	def assem(self,gridlist):
@@ -61,9 +66,9 @@ class Grid:
 			for j in range(1,len(kazu)):
 				kazu[j] = grid[i].count(2**j) + kazu[j]
 			#数を数えている。0は特例
-		if re<=500:
+		if re<=80:
 			hyouka = kazu[0]*800
-		elif 500<re<=900:
+		elif 80<re<=900:
 			hyouka = kazu[0]*1500
 		else:
 			hyouka = kazu[0]*3000
@@ -90,16 +95,7 @@ class Grid:
 			print ("Score: " + str(dic_jdata['score']))
 			cnt = self.count(grid)
 			print ("評価点: " + str(cnt) + "\n")
-			if dic_jdata['over'] == True:
-				print("over!")
-				#ファイルの書き出し。統計のためです
-				file = open('shutz.txt', mode='a')
-				file.write(str(dic_jdata['score']) +" " + str(grid) + str(re))
-				file.write('\n')
-				file.close()
-				sys.exit()
-			else:
-				self.grid = grid
+			self.grid = grid
 		else:
 			r = random.randint(0,3)
 			print('hello world')
@@ -123,17 +119,23 @@ def yaruze(url):
 	re = 1
 	grid = Grid()
 	grid.grid = start(url)
-	while 1:
+	while dic_jdata['over'] != True:
 		if re<10:
 			#moveしてないからgrid.grid設定されてないなのです！
 			grid.move(random.randint(0,2),url)
 		elif 10<= re<500:
-			grid.move(grid.nexs(2),url)
-		elif 500<= re <800:
 			grid.move(grid.nexs(3),url)
-		else:
+		elif 500<= re <800:
 			grid.move(grid.nexs(4),url)
+		else:
+			grid.move(grid.nexs(5),url)
 		re = re + 1
+	print("over!")
+	#ファイルの書き出し。統計のためです
+	file = open('shutz.txt', mode='a')
+	file.write(str(dic_jdata['score']) +" " + str(grid) + str(re))
+	file.write('\n')
+	file.close()
 
 def start(url):
 	json_data = urllib.request.urlopen('http://' + url +'hi/start/json')
