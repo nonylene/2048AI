@@ -10,202 +10,46 @@ import turn
 class Grid:
 	class turn(turn.Turn):
 		pass
-	def nexs(self,grid):
-		global gridr
-		grid_r = copy.deepcopy(grid)
-		grid_r_r = copy.deepcopy(grid)
-		gridr = copy.deepcopy(grid)
-		hyolist = [[0,0,0,0]]*(len(grid)**4)
-		grid = copy.deepcopy(nexg(grid,gridr))
-		ikelist = [[0,0],[0,1],[0,2],[0,3]]
-		#ここで一回目移動シミュレート終了してる
-		for f in range(0,len(grid)):
-			grid_r = copy.deepcopy(grid_r_r)
-			#一回目にダブっていないか確かめる
-			if grid[f] != grid_r:
-				grid_r = copy.deepcopy(grid[f])
-				gridr[f] = copy.deepcopy(grid[f])
-				#二回目移動のシミュレート
-				grid[f] = copy.deepcopy(nexg(grid[f],gridr[f]))
-				#grid[f]にシミュ結果を入れてる
-				for g in range(0,len(grid[f])):
-					#二回目にダブってないか確かめる
-					if grid[f][g] != grid_r:
-						grid_r = copy.deepcopy(grid[f][g])
-						gridr[f][g] = copy.deepcopy(grid[f][g])
-						#三回目移動のシミュレート
-						grid[f][g] = copy.deepcopy(nexg(grid[f][g],gridr[f][g]))
-						for h in range (0,len(grid[f][g])):
-							if grid[f][g][h] != grid_r: 
-								hyolist[f*16 + g*4 + h] = [count(grid[f][g][h]),f,g,h]
-								ikelist[f][0] = 1 + ikelist[f][0]
+
+	def nexs(self,loop):
+		movekey = {0:self.turn.up,1:self.turn.right,2:self.turn.down,3:self.turn.left}
+		estlist = [0,0,0,0]
+		hyolist = [0,0,0,0]
+		for i in range (0,4):
+			movelist = movekey[i](self,self.grid)
+			if movelist[0] != self.grid:
+				estlist[i] = [self.hen(movelist[0],movelist[1])]
+			else:
+				estlist[i] = []
+		for i in range(0,4):
+			if estlist[i] != []:
+				for j in range(0,loop):
+					#loop回先読みする。先読みした項の数から考えていく
+					estlist[i] = self.assem(estlist[i])
+			hyolist[i] = [len(estlist[i]),i]
 		hyolist.sort()
 		hyolist.reverse()
+		print(hyolist)
 		r = hyolist[0][1]
 		return(r)
 
-	def nexs1(self,grid):
-		global gridr
-		grid_r = copy.deepcopy(grid)
-		grid_r_r = copy.deepcopy(grid)
-		gridr = copy.deepcopy(grid)
-		hyolist = [[0,0,0,0]]*(len(grid)**4)
-		grid = copy.deepcopy(nexg(grid,gridr))
-		ikelist = [[0,0],[0,1],[0,2],[0,3]]
-		#ここで一回目移動シミュレート終了してる
-		for f in range(0,len(grid)):
-			grid_r = copy.deepcopy(grid_r_r)
-			#一回目にダブっていないか確かめる
-			if grid[f] != grid_r:
-				grid_r = copy.deepcopy(grid[f])
-				gridr[f] = copy.deepcopy(grid[f])
-				#二回目移動のシミュレート
-				grid[f] = copy.deepcopy(nexg(grid[f],gridr[f]))
-				#grid[f]にシミュ結果を入れてる
-				for g in range(0,len(grid[f])):
-					#二回目にダブってないか確かめる
-					if grid[f][g] != grid_r:
-						grid_r = copy.deepcopy(grid[f][g])
-						gridr[f][g] = copy.deepcopy(grid[f][g])
-						#三回目移動のシミュレート
-						grid[f][g] = copy.deepcopy(nexg(grid[f][g],gridr[f][g]))
-						for h in range(0,len(grid[f][g])):
-							if grid[f][g][h] != grid_r:
-								ikelist[f][0] = 1 + ikelist[f][0]
-								grid_r = copy.deepcopy(grid[f][g][h])
-								gridr[f][g][h] = copy.deepcopy(grid[f][g][h])
-								#四回目移動のシミュレート
-								grid[f][g][h] = copy.deepcopy(nexg(grid[f][g][h],gridr[f][g][h]))
-								for i in range (0,len(grid[f][g][h])):
-									if grid[f][g][h][i] != grid_r: 
-										hyolist[f*64 + g*16 + h*4 + i] = [count(grid[f][g][h][i]),f,g,h,i]
-										
-		hyolist.sort()
-		hyolist.reverse()
-		r = hyolist[0][1]
-		return(r)
-
-	def nexs2(self,grid):
-		global gridr
-		grid_r = copy.deepcopy(grid)
-		grid_r_r = copy.deepcopy(grid)
-		gridr = copy.deepcopy(grid)
-		hyolist = [[0,0,0,0]]*(len(grid)**5)
-		grid = copy.deepcopy(nexg(grid,gridr))
-		ikelist = [[0,0],[0,1],[0,2],[0,3]]
-		#ここで一回目移動シミュレート終了してる
-		for f in range(0,len(grid)):
-			grid_r = copy.deepcopy(grid_r_r)
-			#一回目にダブっていないか確かめる
-			if grid[f] != grid_r:
-				grid_r = copy.deepcopy(grid[f])
-				gridr[f] = copy.deepcopy(grid[f])
-				#二回目移動のシミュレート
-				grid[f] = copy.deepcopy(nexg(grid[f],gridr[f]))
-				#grid[f]にシミュ結果を入れてる
-				for g in range(0,len(grid[f])):
-					#二回目にダブってないか確かめる
-					if grid[f][g] != grid_r:
-						grid_r = copy.deepcopy(grid[f][g])
-						gridr[f][g] = copy.deepcopy(grid[f][g])
-						#三回目移動のシミュレート
-						grid[f][g] = copy.deepcopy(nexg(grid[f][g],gridr[f][g]))
-						for h in range(0,len(grid[f][g])):
-							if grid[f][g][h] != grid_r:
-								ikelist[f][0] = 1 + ikelist[f][0]
-								grid_r = copy.deepcopy(grid[f][g][h])
-								gridr[f][g][h] = copy.deepcopy(grid[f][g][h])
-								#四回目移動のシミュレート
-								grid[f][g][h] = copy.deepcopy(nexg(grid[f][g][h],gridr[f][g][h]))
-								for i in range(0,len(grid[f][g][h])):
-									if grid[f][g][h][i] != grid_r:
-										grid_r = copy.deepcopy(grid[f][g][h][i])
-										gridr[f][g][h][i] = copy.deepcopy(grid[f][g][h][i])
-										nexg(grid[f][g][h][i],gridr[f][g][h][i])
-										#5回目移動のシミュレート
-										grid[f][g][h][i] = copy.deepcopy(nexg(grid[f][g][h][i],gridr[f][g][h][i]))
-										for j in range (0,len(grid[f][g][h][i])):
-											if grid[f][g][h][i][j] != grid_r: 
-												hyolist[f*256 + g*64 + h*16 + i+4 + j] = [count(grid[f][g][h][i][j]),f]
-										
-		hyolist.sort()
-		hyolist.reverse()
-		n = 0
-		while ikelist[hyolist[n][1]][0] == 0:
-			n = n + 1
-			if n == len(hyolist)-3:
-				break
-		ikelist.sort()
-		print(ikelist)
-		while hyolist[n][1] == ikelist[0][1]:
-			n = n + 1
-			if n == len(hyolist)-2:
-				break
-		r = hyolist[n][1]
-		return(r)
-
-	def nexs3(self,grid):
-		global gridr
-		grid_r = copy.deepcopy(grid)
-		grid_r_r = copy.deepcopy(grid)
-		gridr = copy.deepcopy(grid)
-		hyolist = [[0,0,0,0]]*(len(grid)**6)
-		grid = copy.deepcopy(nexg(grid,gridr))
-		ikelist = [[0,0],[0,1],[0,2],[0,3]]
-		#ここで一回目移動シミュレート終了してる
-		for f in range(0,len(grid)):
-			grid_r = copy.deepcopy(grid_r_r)
-			#一回目にダブっていないか確かめる
-			if grid[f] != grid_r:
-				grid_r = copy.deepcopy(grid[f])
-				gridr[f] = copy.deepcopy(grid[f])
-				#二回目移動のシミュレート
-				grid[f] = copy.deepcopy(nexg(grid[f],gridr[f]))
-				#grid[f]にシミュ結果を入れてる
-				for g in range(0,len(grid[f])):
-					#二回目にダブってないか確かめる
-					if grid[f][g] != grid_r:
-						grid_r = copy.deepcopy(grid[f][g])
-						gridr[f][g] = copy.deepcopy(grid[f][g])
-						#三回目移動のシミュレート
-						grid[f][g] = copy.deepcopy(nexg(grid[f][g],gridr[f][g]))
-						for h in range(0,len(grid[f][g])):
-							if grid[f][g][h] != grid_r:
-								ikelist[f][0] = 1 + ikelist[f][0]
-								grid_r = copy.deepcopy(grid[f][g][h])
-								gridr[f][g][h] = copy.deepcopy(grid[f][g][h])
-								#四回目移動のシミュレート
-								grid[f][g][h] = copy.deepcopy(nexg(grid[f][g][h],gridr[f][g][h]))
-								for i in range(0,len(grid[f][g][h])):
-									if grid[f][g][h][i] != grid_r:
-										grid_r = copy.deepcopy(grid[f][g][h][i])
-										gridr[f][g][h][i] = copy.deepcopy(grid[f][g][h][i])
-										#5回目移動のシミュレート
-										grid[f][g][h][i] = copy.deepcopy(nexg(grid[f][g][h][i],gridr[f][g][h][i]))
-										for j in range(0,len(grid[f][g][h][i])):
-											if grid[f][g][h][i][j] != grid_r:
-												grid_r = copy.deepcopy(grid[f][g][h][i][j])
-												gridr[f][g][h][i] = copy.deepcopy(grid[f][g][h][i][j])
-												#5回目移動のシミュレート
-												grid[f][g][h][i][j] = copy.deepcopy(nexg(grid[f][g][h][i][j],gridr[f][g][h][i][j]))
-												for k in range (0,len(grid[f][g][h][i][j])):
-													if grid[f][g][h][i][j][k] != grid_r: 
-														hyolist[f*1024 + g*256 + h*64 + i+16 + j*4 + k] = [count(grid[f][g][h][i][j][k]),f]									
-		hyolist.sort()
-		hyolist.reverse()
-		n = 0
-		while ikelist[hyolist[n][1]][0] == 0:
-			n = n + 1
-			if n == len(hyolist)-3:
-				break
-		ikelist.sort()
-		print(ikelist)
-		while hyolist[n][1] == ikelist[0][1]:
-			n = n + 1
-			if n == len(hyolist)-2:
-				break
-		r = hyolist[n][1]
-		return(r)
+	def assem(self,gridlist):
+		#与えられたgridのリストに対して予測したものを返す関数
+		gridt = []
+		for i in range(0,len(gridlist)):
+			right = self.turn.right(self,gridlist[i])
+			if right[0] != gridlist[i]:
+				gridt.append(self.hen(right[0],right[1]))
+			left = self.turn.left(self,gridlist[i])
+			if left[0] != gridlist[i]:
+				gridt.append(self.hen(left[0],left[1]))
+			up = self.turn.up(self,gridlist[i])
+			if up[0] != gridlist[i]:
+				gridt.append(self.hen(left[0],left[1]))
+			down = self.turn.down(self,gridlist[i])
+			if down[0] != gridlist[i]:
+				gridt.append(self.hen(down[0],down[1]))
+		return(gridt)
 
 	def count(self,grid):
 		global re
@@ -229,14 +73,6 @@ class Grid:
 				hyouka = int(kazu[i]*(1.7**(i*2))) + hyouka
 		return hyouka
 
-	def nexg(self,grid,gridr):
-		gridt = [0,0,0,0]
-		gridt[1] = copy.deepcopy(hen(right(grid),gridr))
-		gridt[3] = copy.deepcopy(hen(left(grid),gridr))
-		gridt[0] = copy.deepcopy(hen(up(grid),gridr))
-		gridt[2] = copy.deepcopy(hen(down(grid),gridr))
-		return(gridt)
-
 	def move(self,r,url):
 		#サーバーに送ってgridを返すもの。同じだったらランダムで入れ替わる
 		global dic_jdata
@@ -252,7 +88,7 @@ class Grid:
 			for i in range(0,len(grid[0])):
 				print (grid[i])
 			print ("Score: " + str(dic_jdata['score']))
-			cnt = grid.count(grid)
+			cnt = self.count(grid)
 			print ("評価点: " + str(cnt) + "\n")
 			if dic_jdata['over'] == True:
 				print("over!")
@@ -263,15 +99,16 @@ class Grid:
 				file.close()
 				sys.exit()
 			else:
-				return(grid)
+				self.grid = grid
 		else:
 			r = random.randint(0,3)
+			print('hello world')
 			self.move(r,url)
 
-	def hen(self,grid,gridr):
+
+	def hen(self,grid,zero):
 		#ランダムに2を入れて返す関数
-		global zero
-		if len(zero) != 0 and grid != gridr:
+		if len(zero) != 0:
 			gridtem =[0]*len(zero)
 			i  = random.randint(0,len(zero)-1)
 			gridtem[i] = copy.deepcopy(grid)
@@ -281,20 +118,21 @@ class Grid:
 			return(grid)
 
 def yaruze(url):
-	#動くところ
+	#動くところ	
 	global re
 	re = 1
 	grid = Grid()
 	grid.grid = start(url)
 	while 1:
-		if re<70:
-			grid.grid = grid.move(random.randint(0,2),url)
-		elif 70<= re<500:
-			grid.grid = grid.move(nexs(grid.grid),url)
+		if re<10:
+			#moveしてないからgrid.grid設定されてないなのです！
+			grid.move(random.randint(0,2),url)
+		elif 10<= re<500:
+			grid.move(grid.nexs(2),url)
 		elif 500<= re <800:
-			grid.grid = grid.move(nexs1(grid.grid),url)
+			grid.move(grid.nexs(3),url)
 		else:
-			grid.grid = grid.move(nexs2(grid.grid),url)
+			grid.move(grid.nexs(4),url)
 		re = re + 1
 
 def start(url):
@@ -320,4 +158,4 @@ if __name__ == "__main__":
 	else:
 		print("ha????????")
 		sys.exit()
-	yaruze(url)
+	yaruze(url)	

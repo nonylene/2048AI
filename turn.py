@@ -3,10 +3,10 @@
 import copy
 
 class Turn:
-	def right(self):
+	def right(self,grid):
 		#右は1です
 		zero = []
-		gridt = copy.deepcopy(self.grid)
+		gridt = copy.deepcopy(grid)
 		for i in range(0,len(gridt)):
 			zeroc = 0
 			while 0 in gridt[i]:
@@ -27,13 +27,13 @@ class Turn:
 				gridt[i].insert(0, 0)
 				zero.append([i,zeroc])
 				zeroc = zeroc + 1
-		return gridt
+		return [gridt,zero]
 
-	def left(self):
+	def left(self,grid):
 		#左は3です
 		global zero
 		zero = []
-		gridt = copy.deepcopy(self.grid)
+		gridt = copy.deepcopy(grid)
 		for i in range(0,len(gridt)):
 			zeroc = 0
 			while 0 in gridt[i]:
@@ -53,15 +53,15 @@ class Turn:
 				gridt[i].append(0)
 				zero.append([i,3-zeroc])
 				zeroc = zeroc + 1
-		return gridt
+		return [gridt,zero]
 
-	def up(self):
+	def up(self,grid):
 		#上は0です
 		global zero
 		zero = []
 		#gridtのtはtemporaryのtだよっ！一回左右に変換してからやり直す
 		gridtt = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
-		gridt = copy.deepcopy(self.grid)
+		gridt = copy.deepcopy(grid)
 		for i in range(0,len(gridt)):
 			for j in range(0,len(gridt[i])):
 				gridtt[i][j] = gridt[j][i]
@@ -90,15 +90,15 @@ class Turn:
 				gridt[i][j] = gridtt[j][i]
 		for i in range(0,len(zero)):
 			zero[i].reverse()
-		return gridt
+		return [gridt,zero]
 
-	def down(self):
+	def down(self,grid):
 		#下は2です
 		#gridtのtはtemporaryのtだよっ！一回左右に変換してからやり直す
 		global zero
 		zero = []
 		gridtt = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
-		gridt = copy.deepcopy(self.grid)
+		gridt = copy.deepcopy(grid)
 		for i in range(0,len(gridt)):
 			for j in range(0,len(gridt[i])):
 				gridtt[i][j] = gridt[j][i]
@@ -128,7 +128,7 @@ class Turn:
 				gridt[i][j] = gridtt[j][i]
 		for i in range(0,len(zero)):
 			zero[i].reverse()
-		return gridt
+		return [gridt,zero]
 		
 if __name__=="__main__":
 	grid = Turn()
