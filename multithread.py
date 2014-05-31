@@ -24,8 +24,9 @@ class Grid:
 				self.est[i] = [self.hen(movelist[0],movelist[1])]
 			else:
 				self.est[i] = []
-		p = Pool(1)
+		p = Pool(4)
 		self.est = list(p.map(self.ret,[0,1,2,3]))
+		p.close()
 		self.est.sort()
 		self.est.reverse()
 		print(self.est)
@@ -34,7 +35,7 @@ class Grid:
 
 	def ret(self,i):
 		if self.est[i] != []:
-			for j in range(0,3):
+			for j in range(0,6):
 				#loop回先読みする。先読みした項の数から考えていく
 				self.est[i] = self.assem(self.est[i])
 			if self.est[i] != []:
@@ -127,10 +128,10 @@ def yaruze(url):
 	grid = Grid()
 	grid.grid = start(url)
 	while dic_jdata['over'] != True:
-		if re<-80:
+		if re<80:
 			#moveしてないからgrid.grid設定されてないなのです！
 			grid.move(random.randint(0,2),url)
-		elif -80<= re<500:
+		elif 80<= re<500:
 			#実際に先読みするのはこれ+1回
 			grid.move(grid.nexs(3),url)
 		elif 500<= re <800:
