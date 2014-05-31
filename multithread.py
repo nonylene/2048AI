@@ -65,7 +65,6 @@ class Grid:
 		return(gridt)
 
 	def count(self,grid):
-		global re
 		#評価
 		kazu = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 		#kazuは盤上の数字の個数
@@ -74,9 +73,9 @@ class Grid:
 			for j in range(1,len(kazu)):
 				kazu[j] = grid[i].count(2**j) + kazu[j]
 			#数を数えている。0は特例
-		if re<=50:
+		if self.re<=50:
 			hyouka = kazu[0]*800
-		elif 50<re<=900:
+		elif 50<self.re<=900:
 			hyouka = kazu[0]*1500
 		else:
 			hyouka = kazu[0]*3000
@@ -94,7 +93,7 @@ class Grid:
 		if dic_jdata['grid'] != json.loads(str_jdata)['grid']:
 			dic_jdata = json.loads(str_jdata)
 			r = random.randint(0,3)
-			print(str(re) + "回目の移動")
+			print(str(self.re) + "回目の移動")
 			direction = ["↑","→","↓","←"]
 			print("direction: " + direction[r])
 			grid = dic_jdata['grid']
@@ -123,26 +122,25 @@ class Grid:
 
 def yaruze(url):
 	#動くところ	
-	global re
-	re = 1
 	grid = Grid()
+	grid.re = 1
 	grid.grid = start(url)
 	while dic_jdata['over'] != True:
-		if re<80:
+		if grid.re<80:
 			#moveしてないからgrid.grid設定されてないなのです！
 			grid.move(random.randint(0,2),url)
-		elif 80<= re<500:
+		elif 80<= grid.re<500:
 			#実際に先読みするのはこれ+1回
 			grid.move(grid.nexs(3),url)
-		elif 500<= re <800:
+		elif 500<= grid.re <800:
 			grid.move(grid.nexs(4),url)
 		else:
 			grid.move(grid.nexs(5),url)
-		re = re + 1
+		grid.re = grid.re + 1
 	print("over!")
 	#ファイルの書き出し。統計のためです
 	file = open('shutz.txt', mode='a')
-	file.write(str(dic_jdata['score']) +" " + str(grid.grid) + str(re))
+	file.write(str(dic_jdata['score']) +" " + str(grid.grid) + str(grid.re))
 	file.write('\n')
 	file.close()
 
