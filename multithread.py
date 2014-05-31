@@ -6,36 +6,44 @@ import urllib.request
 import random
 import sys
 import turn
+from multiprocessing import Pool
 
 class Grid:
+	def __init__(self):
+		self.est = []
+
 	class turn(turn.Turn):
 		pass
 
 	def nexs(self,loop):
 		movekey = {0:self.turn.up,1:self.turn.right,2:self.turn.down,3:self.turn.left}
-		estlist = [0,0,0,0]
+		self.est = [0,0,0,0]
 		for i in range (0,4):
 			movelist = movekey[i](self,self.grid)
 			if movelist[0] != self.grid:
-				estlist[i] = [self.hen(movelist[0],movelist[1])]
+				self.est[i] = [self.hen(movelist[0],movelist[1])]
 			else:
-				estlist[i] = []
-		for i in range(0,4):
-			if estlist[i] != []:
-				for j in range(0,loop):
-					#loop回先読みする。先読みした項の数から考えていく
-					estlist[i] = self.assem(estlist[i])
-				if estlist[i] != []:
-					for j in range(len(estlist[i])):
-						estlist[i][j] = self.count(estlist[i][j])
-					estlist[i] = [max(estlist[i]),len(estlist[i]),i]
-			else:
-				estlist[i] = [0,0,i]
-		estlist.sort()
-		estlist.reverse()
-		print(estlist)
-		r = estlist[0][2]
+				self.est[i] = []
+		p = Pool(1)
+		self.est = list(p.map(self.ret,[0,1,2,3]))
+		self.est.sort()
+		self.est.reverse()
+		print(self.est)
+		r = self.est[0][2]
 		return(r)
+
+	def ret(self,i):
+		if self.est[i] != []:
+			for j in range(0,3):
+				#loop回先読みする。先読みした項の数から考えていく
+				self.est[i] = self.assem(self.est[i])
+			if self.est[i] != []:
+				for j in range(len(self.est[i])):
+					self.est[i][j] = self.count(self.est[i][j])
+				self.est[i] = [max(self.est[i]),len(self.est[i]),i]
+		else:
+			self.est[i] = [0,0,i]
+		return(self.est[i])
 
 	def assem(self,gridlist):
 		#与えられたgridのリストに対して予測したものを返す関数
@@ -119,10 +127,10 @@ def yaruze(url):
 	grid = Grid()
 	grid.grid = start(url)
 	while dic_jdata['over'] != True:
-		if re<80:
+		if re<-80:
 			#moveしてないからgrid.grid設定されてないなのです！
 			grid.move(random.randint(0,2),url)
-		elif 80<= re<500:
+		elif -80<= re<500:
 			#実際に先読みするのはこれ+1回
 			grid.move(grid.nexs(3),url)
 		elif 500<= re <800:
