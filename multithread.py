@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import json
-import copy
 import urllib.request
 import random
 import sys
@@ -15,7 +14,7 @@ class Grid:
 	class turn(turn.Turn):
 		pass
 
-	def nexs(self,loop):
+	def nexs(self):
 		movekey = {0:self.turn.up,1:self.turn.right,2:self.turn.down,3:self.turn.left}
 		self.est = [0,0,0,0]
 		for i in range (0,4):
@@ -34,8 +33,14 @@ class Grid:
 		return(r)
 
 	def ret(self,i):
+		if self.re<=300:
+			loop = 4
+		elif 300<self.re<=700:
+			loop = 5
+		else:
+			loop = 6
 		if self.est[i] != []:
-			for j in range(0,6):
+			for j in range(0,loop):
 				#loop回先読みする。先読みした項の数から考えていく
 				self.est[i] = self.assem(self.est[i])
 			if self.est[i] != []:
@@ -114,7 +119,7 @@ class Grid:
 		if len(zero) != 0:
 			gridtem =[0]*len(zero)
 			i  = random.randint(0,len(zero)-1)
-			gridtem[i] = copy.deepcopy(grid)
+			gridtem[i] = grid
 			gridtem[i][zero[i][0]][zero[i][1]] = 2
 			return(gridtem[i])
 		else:
@@ -129,17 +134,12 @@ def yaruze(url):
 		if grid.re<80:
 			#moveしてないからgrid.grid設定されてないなのです！
 			grid.move(random.randint(0,2),url)
-		elif 80<= grid.re<500:
-			#実際に先読みするのはこれ+1回
-			grid.move(grid.nexs(3),url)
-		elif 500<= grid.re <800:
-			grid.move(grid.nexs(4),url)
 		else:
-			grid.move(grid.nexs(5),url)
+			grid.move(grid.nexs(),url)
 		grid.re = grid.re + 1
 	print("over!")
 	#ファイルの書き出し。統計のためです
-	file = open('shutz.txt', mode='a')
+	file = open('shutm.txt', mode='a')
 	file.write(str(dic_jdata['score']) +" " + str(grid.grid) + str(grid.re))
 	file.write('\n')
 	file.close()
@@ -158,8 +158,10 @@ def start(url):
 	return(grid)
 
 if __name__ == "__main__":
+	#poolの関係上こっちに回数を組込する
 	u = 0
 	u = int(input("URL(1:outside, 2:ring): "))
+	count = int(input("やりたい回数: "))
 	if u == 1:
 		url = "2048.semantics3.com/"
 	elif u == 2:
@@ -167,4 +169,20 @@ if __name__ == "__main__":
 	else:
 		print("ha????????")
 		sys.exit()
-	yaruze(url)	
+	for i in range(0,count):
+		print (str(i+1) + "回目" + "\n")
+		yaruze(url)
+	filex = open('shut.txt', mode = 'a')
+	file = open("shutz.txt", mode ='r')
+	filex.write("\n--hyb3\n")
+	sumk = 0
+	for line in file:
+		kaz = line.split()
+		for i in range(0,len(kaz)):
+			filex.write(kaz[i] + " ")
+		filex.write('\n')
+		sumk = int(kaz[0]) + sumk
+	filex.write("average: " + str(int(sumk / count)) + "\n" )
+	file.close()
+	os.remove('shutz.txt')
+	filex.close()
