@@ -33,7 +33,7 @@ class Grid:
 	def ret(self,i):
 		if self.re<=300:
 			loop = 4
-		elif 300<self.re<=700:
+		elif 300<self.re<=800:
 			loop = 5
 		else:
 			loop = 6
@@ -79,12 +79,14 @@ class Grid:
 			for j in range(1,len(kazu)):
 				kazu[j] = grid[i].count(2**j) + kazu[j]
 			#数を数えている。0は特例
-		if self.re<=50:
+		if self.re<=300:
 			hyouka = kazu[0]*800
-		elif 50<self.re<=900:
+		elif 300<self.re<=800:
 			hyouka = kazu[0]*1500
+		elif 800<self.re<=1300:
+			hyouka = kazu[0]*4000
 		else:
-			hyouka = kazu[0]*3000
+			hyouka = kazu[0]*7000
 		#盤上を評価する。0が5点、それ以外は1.7*i点→素数にすると簡単に判別できるかも？
 		for i in range(1,len(kazu)):
 			if kazu[i] != 0:
@@ -157,6 +159,7 @@ def start(url):
 	#盤を表示する
 	print ("score: " + str(dic_jdata['score']) + "\n")
 	return(grid)
+
 
 if __name__ == "__main__":
 	#poolの関係上こっちに回数を組込する
