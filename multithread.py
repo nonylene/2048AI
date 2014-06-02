@@ -8,9 +8,6 @@ import turn
 from multiprocessing import Pool
 
 class Grid:
-	def __init__(self):
-		self.est = []
-
 	class turn(turn.Turn):
 		pass
 
@@ -25,11 +22,12 @@ class Grid:
 				self.est[i] = []
 		p = Pool(4)
 		self.est = list(p.map(self.ret,[0,1,2,3]))
+		self.est.sort(reverse=True)
 		p.close()
-		self.est.sort()
-		self.est.reverse()
 		print(self.est)
 		r = self.est[0][2]
+		if self.est[0][1] == sorted(self.est, key = lambda x:x[1]):
+			r = self.est[1][1]
 		return(r)
 
 	def ret(self,i):
@@ -47,6 +45,9 @@ class Grid:
 				for j in range(len(self.est[i])):
 					self.est[i][j] = self.count(self.est[i][j])
 				self.est[i] = [max(self.est[i]),len(self.est[i]),i]
+				#最大値、いける数、方向
+			else:
+				self.est[i] = [0,0,i]
 		else:
 			self.est[i] = [0,0,i]
 		return(self.est[i])
