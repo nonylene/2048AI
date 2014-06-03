@@ -11,6 +11,12 @@ class Grid:
 	class turn(turn.Turn):
 		pass
 
+	def zero(self):
+		zero = 0
+		for i in range(4):
+			zero = self.grid[i].count(0) + zero
+		return(zero)
+
 	def nexs(self):
 		movekey = {0:self.turn.up,1:self.turn.right,2:self.turn.down,3:self.turn.left}
 		self.est = [0,0,0,0]
@@ -24,19 +30,25 @@ class Grid:
 		self.est = list(p.map(self.ret,[0,1,2,3]))
 		self.est.sort(reverse=True)
 		p.close()
-		print(self.est)
 		r = self.est[0][2]
-		if self.est[0][1] == sorted(self.est, key = lambda x:x[1]):
-			r = self.est[1][1]
 		return(r)
 
 	def ret(self,i):
+		zero = self.zero()
 		if self.re<=400:
+			loop = 3
+		elif 400<self.re<=600:
 			loop = 4
-		elif 400<self.re<=1300:
+		elif 925<self.re<=960:
+			loop = 4
+		elif 960<self.re<=1000:
+			loop = 3
+		elif zero<=1:
+			loop = 6
+		elif 1<zero<=5:
 			loop = 5
 		else:
-			loop = 6
+			loop = 4
 		if self.est[i] != []:
 			for j in range(0,loop):
 				#loop回先読みする。先読みした項の数から考えていく
@@ -100,13 +112,17 @@ class Grid:
 		str_jdata = json_data.read().decode('utf-8')
 		if dic_jdata['grid'] != json.loads(str_jdata)['grid']:
 			dic_jdata = json.loads(str_jdata)
-			r = random.randint(0,3)
-			print(str(self.re) + "回目の移動")
+			colordic = {0:'\033[37m',2:'\033[1m',4:'\033[1m',8:'\033[1m\033[1;34m\033[47m',16:'\033[1m\033[32m\033[47m',32:'\033[1m\033[35m\033[47m',64:'\033[1m\033[31m\033[47m',
+			128:'\033[1m\033[1;44m',256:'\033[1m\033[42m',512:'\033[1m\033[45m',1024:'\033[1m\033[41m',2048:'\033[1m\033[43m',4096:'\033[1m\033[41m'}
+			print(self.est)
+			print("count: " + str(self.re))
 			direction = ["↑","→","↓","←"]
 			print("direction: " + direction[r])
 			grid = dic_jdata['grid']
 			for i in range(0,len(grid[0])):
-				print (grid[i])
+				for j in range(4):
+					print (colordic[grid[i][j]] + "%5d"% grid[i][j] + "\033[0m" , end = "")
+				print("\n")
 			print ("Score: " + str(dic_jdata['score']))
 			cnt = self.count(grid)
 			print ("評価点: " + str(cnt) + "\n")
@@ -133,8 +149,9 @@ def yaruze(url):
 	grid = Grid()
 	grid.re = 1
 	grid.grid = start(url)
+	grid.est = ""
 	while dic_jdata['over'] != True:
-		if grid.re<80:
+		if grid.re<90:
 			#moveしてないからgrid.grid設定されてないなのです！
 			grid.move(random.randint(0,2),url)
 		else:
@@ -143,8 +160,11 @@ def yaruze(url):
 	print("over!")
 	#ファイルの書き出し。統計のためです
 	file = open('shutm.txt', mode='a')
-	file.write(str(dic_jdata['score']) +" " + str(grid.grid) + str(grid.re))
-	file.write('\n')
+	if grid.re > 100:
+		file.write('\n')
+		file.write(str(dic_jdata['score']) +" " + str(grid.grid) + str(grid.re))
+	else:
+		file.write("," + str(dic_jdata['score']) + " " + str(grid.re))
 	file.close()
 
 def start(url):
@@ -163,8 +183,6 @@ def start(url):
 
 if __name__ == "__main__":
 	#poolの関係上こっちに回数を組込する
-	import gui
-	gui.start()
 	u = 0
 	u = int(input("URL(1:outside, 2:ring): "))
 	count = int(input("やりたい回数: "))
@@ -178,17 +196,3 @@ if __name__ == "__main__":
 	for i in range(0,count):
 		print (str(i+1) + "回目" + "\n")
 		yaruze(url)
-	filex = open('shut.txt', mode = 'a')
-	file = open("shutz.txt", mode ='r')
-	filex.write("\n--hyb3\n")
-	sumk = 0
-	for line in file:
-		kaz = line.split()
-		for i in range(0,len(kaz)):
-			filex.write(kaz[i] + " ")
-		filex.write('\n')
-		sumk = int(kaz[0]) + sumk
-	filex.write("average: " + str(int(sumk / count)) + "\n" )
-	file.close()
-	os.remove('shutz.txt')
-	filex.close()
