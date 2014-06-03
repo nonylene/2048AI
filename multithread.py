@@ -31,9 +31,9 @@ class Grid:
 		return(r)
 
 	def ret(self,i):
-		if self.re<=300:
+		if self.re<=400:
 			loop = 4
-		elif 300<self.re<=800:
+		elif 400<self.re<=1300:
 			loop = 5
 		else:
 			loop = 6
@@ -163,6 +163,8 @@ def start(url):
 
 if __name__ == "__main__":
 	#poolの関係上こっちに回数を組込する
+	import gui
+	gui.start()
 	u = 0
 	u = int(input("URL(1:outside, 2:ring): "))
 	count = int(input("やりたい回数: "))
