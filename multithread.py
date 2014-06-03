@@ -4,6 +4,7 @@ import json
 import urllib.request
 import random
 import sys
+import copy
 import turn
 from multiprocessing import Pool
 
@@ -31,6 +32,8 @@ class Grid:
 		self.est.sort(reverse=True)
 		p.close()
 		r = self.est[0][2]
+		if self.est[0][1] == sorted(self.est, key = lambda x:x[1]):
+			r = self.est[1][1]
 		return(r)
 
 	def ret(self,i):
@@ -39,10 +42,8 @@ class Grid:
 			loop = 3
 		elif 400<self.re<=600:
 			loop = 4
-		elif 925<self.re<=960:
+		elif 925<self.re<=1000:
 			loop = 4
-		elif 960<self.re<=1000:
-			loop = 3
 		elif zero<=1:
 			loop = 6
 		elif 1<zero<=5:
@@ -83,27 +84,56 @@ class Grid:
 		return(gridt)
 
 	def count(self,grid):
+		gridt = copy.deepcopy(grid)
 		#評価
 		kazu = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 		#kazuは盤上の数字の個数
-		for i in range(0,len(grid)):
-			kazu[0] = grid[i].count(0) + kazu[0]
-			for j in range(1,len(kazu)):
-				kazu[j] = grid[i].count(2**j) + kazu[j]
-			#数を数えている。0は特例
-		if self.re<=300:
-			hyouka = kazu[0]*800
-		elif 300<self.re<=800:
-			hyouka = kazu[0]*1500
-		elif 800<self.re<=1300:
-			hyouka = kazu[0]*4000
+		if self.re <= 700:
+			for i in range(0,len(grid)):
+				kazu[0] = grid[i].count(0) + kazu[0]
+				for j in range(1,len(kazu)):
+					kazu[j] = grid[i].count(2**j) + kazu[j]
+				#数を数えている。0は特例
+			if self.re<=300:
+				hyouka = kazu[0]*800
+			else:
+				hyouka = kazu[0]*1500
+			#盤上を評価する。0が5点、それ以外は1.7*i点→素数にすると簡単に判別できるかも？
+			for i in range(1,len(kazu)):
+				if kazu[i] != 0:
+					hyouka = int(kazu[i]*(1.7**(i*2))) + hyouka
+			return hyouka
 		else:
-			hyouka = kazu[0]*7000
-		#盤上を評価する。0が5点、それ以外は1.7*i点→素数にすると簡単に判別できるかも？
-		for i in range(1,len(kazu)):
-			if kazu[i] != 0:
-				hyouka = int(kazu[i]*(1.7**(i*2))) + hyouka
-		return hyouka
+			gridt[0].append(grid[0][0])
+			gridt[0].append(grid[0][0])
+			gridt[0].append(grid[0][1])
+			gridt[0].append(grid[0][3])
+			gridt[0].append(grid[0][3])
+			gridt[0].append(grid[0][2])
+			gridt[1].append(grid[1][0])
+			gridt[1].append(grid[1][3])
+			gridt[2].append(grid[2][0])
+			gridt[2].append(grid[2][3])
+			gridt.append(grid[1])
+			for j in range(1,len(kazu)):
+				kazu[j] = gridt[0].count(2**j)*4 + kazu[j]
+			for i in range(1,len(gridt)):
+				for j in range(1,len(kazu)):
+					kazu[j] = gridt[i].count(2**j) + kazu[j]
+				#数を数えている。0は特例
+			if self.re<=300:
+				hyouka = kazu[0]*800
+			elif 300<self.re<=1000:
+				hyouka = kazu[0]*1500
+			elif 1000<self.re<=1300:
+				hyouka = kazu[0]*4000
+			else:
+				hyouka = kazu[0]*7000
+			#盤上を評価する。0が5点、それ以外は1.7*i点→素数にすると簡単に判別できるかも？
+			for i in range(1,len(kazu)):
+				if kazu[i] != 0:
+					hyouka = int(kazu[i]*(1.7**(i*2))) + hyouka
+			return hyouka
 
 	def move(self,r,url):
 		#サーバーに送ってgridを返すもの。同じだったらランダムで入れ替わる
@@ -112,7 +142,8 @@ class Grid:
 		str_jdata = json_data.read().decode('utf-8')
 		if dic_jdata['grid'] != json.loads(str_jdata)['grid']:
 			dic_jdata = json.loads(str_jdata)
-			colordic = {0:'\033[37m',2:'\033[1m',4:'\033[1m',8:'\033[1m\033[1;34m\033[47m',16:'\033[1m\033[32m\033[47m',32:'\033[1m\033[35m\033[47m',64:'\033[1m\033[31m\033[47m',
+			#0は非表示
+			colordic = {0:'\033[30m\033[40m',2:'\033[1m',4:'\033[1m',8:'\033[1m\033[1;34m\033[47m',16:'\033[1m\033[32m\033[47m',32:'\033[1m\033[35m\033[47m',64:'\033[1m\033[31m\033[47m',
 			128:'\033[1m\033[1;44m',256:'\033[1m\033[42m',512:'\033[1m\033[45m',1024:'\033[1m\033[41m',2048:'\033[1m\033[43m',4096:'\033[1m\033[41m'}
 			print(self.est)
 			print("count: " + str(self.re))
@@ -121,11 +152,9 @@ class Grid:
 			grid = dic_jdata['grid']
 			for i in range(0,len(grid[0])):
 				for j in range(4):
-					print (colordic[grid[i][j]] + "%5d"% grid[i][j] + "\033[0m" , end = "")
+					print (colordic[grid[i][j]] + "%4d"% grid[i][j] + "\033[0m" , end = " ")
 				print("\n")
 			print ("Score: " + str(dic_jdata['score']))
-			cnt = self.count(grid)
-			print ("評価点: " + str(cnt) + "\n")
 			self.grid = grid
 		else:
 			r = random.randint(0,3)
@@ -174,8 +203,11 @@ def start(url):
 	grid = [0,0,0,0]
 	dic_jdata = json.loads(str_jdata)	
 	grid = dic_jdata['grid']
-	for i in range(0,len(grid)):
-		print(grid[i])
+	colordic = {0:'\033[30m\033[40m',2:'\033[1m',4:'\033[1m'}
+	for i in range(0,len(grid[0])):
+		for j in range(4):
+			print (colordic[grid[i][j]] + "%4d"% grid[i][j] + "\033[0m" , end = " ")
+		print("\n")
 	#盤を表示する
 	print ("score: " + str(dic_jdata['score']) + "\n")
 	return(grid)
