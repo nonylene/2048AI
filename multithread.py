@@ -8,6 +8,10 @@ import turn
 from multiprocessing import Pool
 
 class Grid:
+	def __init__(self):
+		self.score = {1:1.7**(1*2),2:1.7**(2*2),3:1.7**(3*2),4:1.7**(4*2),5:1.7**(5*2),6:1.7**(6*2),
+		7:1.7**(7*2),8:1.7**(8*2),9:1.7**(9*2),10:1.7**(10*2),11:1.7**(11*2),12:1.7**(13*2),}
+
 	class turn(turn.Turn):
 		pass
 
@@ -39,12 +43,25 @@ class Grid:
 			loop = 3
 		elif 400<self.re<=600:
 			loop = 4
-		elif 925<self.re<=960:
-			loop = 4
-		elif 960<self.re<=1000:
-			loop = 3
-		elif zero<=1:
-			loop = 6
+		elif 700<self.re<=850:
+			loop = 5
+		elif 900<self.re<=1000:
+			if zero == 0:
+				loop = 7
+			else:
+				loop = 4
+		elif 1350<self.re<=1500:
+			if zero == 0:
+				loop = 7
+			else:
+				loop = 4
+		elif 1900<self.re<=2000:
+			if zero == 0:
+				loop = 7
+			else:
+				loop = 4
+		elif 0<=zero<=1:
+			loop = 7
 		elif 1<zero<=5:
 			loop = 5
 		else:
@@ -102,17 +119,18 @@ class Grid:
 		#盤上を評価する。0が5点、それ以外は1.7*i点→素数にすると簡単に判別できるかも？
 		for i in range(1,len(kazu)):
 			if kazu[i] != 0:
-				hyouka = int(kazu[i]*(1.7**(i*2))) + hyouka
+				hyouka = int(kazu[i]*self.score[i]) + hyouka
 		return hyouka
 
 	def move(self,r,url):
-		#サーバーに送ってgridを返すもの。同じだったらランダムで入れ替わる
+	#サーバーに送ってgridを返すもの。同じだったらランダムで入れ替わる
 		global dic_jdata
 		json_data = urllib.request.urlopen('http://' + url +'hi/state/' + dic_jdata['session_id'] + '/move/' + str(r) +'/json')
 		str_jdata = json_data.read().decode('utf-8')
 		if dic_jdata['grid'] != json.loads(str_jdata)['grid']:
 			dic_jdata = json.loads(str_jdata)
-			colordic = {0:'\033[37m',2:'\033[1m',4:'\033[1m',8:'\033[1m\033[1;34m\033[47m',16:'\033[1m\033[32m\033[47m',32:'\033[1m\033[35m\033[47m',64:'\033[1m\033[31m\033[47m',
+			#0は非表示
+			colordic = {0:'\033[30m\033[40m',2:'\033[1m',4:'\033[1m',8:'\033[1m\033[1;34m\033[47m',16:'\033[1m\033[32m\033[47m',32:'\033[1m\033[35m\033[47m',64:'\033[1m\033[31m\033[47m',
 			128:'\033[1m\033[1;44m',256:'\033[1m\033[42m',512:'\033[1m\033[45m',1024:'\033[1m\033[41m',2048:'\033[1m\033[43m',4096:'\033[1m\033[41m'}
 			print(self.est)
 			print("count: " + str(self.re))
@@ -121,16 +139,15 @@ class Grid:
 			grid = dic_jdata['grid']
 			for i in range(0,len(grid[0])):
 				for j in range(4):
-					print (colordic[grid[i][j]] + "%5d"% grid[i][j] + "\033[0m" , end = "")
+					print (colordic[grid[i][j]] + "%4d"% grid[i][j] + "\033[0m" , end = " ")
 				print("\n")
 			print ("Score: " + str(dic_jdata['score']))
-			cnt = self.count(grid)
-			print ("評価点: " + str(cnt) + "\n")
 			self.grid = grid
 		else:
 			r = random.randint(0,3)
 			print('hello world')
 			self.move(r,url)
+
 
 
 	def hen(self,grid,zero):
@@ -174,12 +191,14 @@ def start(url):
 	grid = [0,0,0,0]
 	dic_jdata = json.loads(str_jdata)	
 	grid = dic_jdata['grid']
-	for i in range(0,len(grid)):
-		print(grid[i])
+	colordic = {0:'\033[30m\033[40m',2:'\033[1m',4:'\033[1m'}
+	for i in range(0,len(grid[0])):
+		for j in range(4):
+			print (colordic[grid[i][j]] + "%4d"% grid[i][j] + "\033[0m" , end = " ")
+		print("\n")
 	#盤を表示する
 	print ("score: " + str(dic_jdata['score']) + "\n")
 	return(grid)
-
 
 if __name__ == "__main__":
 	#poolの関係上こっちに回数を組込する
