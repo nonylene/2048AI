@@ -6,6 +6,7 @@ import urllib.request
 import random
 import sys
 import turn
+import time
 
 class Grid:
 	class turn(turn.Turn):
@@ -14,6 +15,9 @@ class Grid:
 	def nexs(self,loop):
 		movekey = {0:self.turn.up,1:self.turn.right,2:self.turn.down,3:self.turn.left}
 		estlist = [0,0,0,0]
+		timelist = [0,0,0,0]
+		time1 = 0
+		time2 = 0
 		for i in range (0,4):
 			movelist = movekey[i](self,self.grid)
 			if movelist[0] != self.grid:
@@ -22,15 +26,21 @@ class Grid:
 				estlist[i] = []
 		for i in range(0,4):
 			if estlist[i] != []:
+				time1 = time.time()
 				for j in range(0,loop):
 					#loop回先読みする。先読みした項の数から考えていく
 					estlist[i] = self.assem(estlist[i])
 				if estlist[i] != []:
+					time1 = time.time() - time1
+					time2 = time.time()
 					for j in range(len(estlist[i])):
 						estlist[i][j] = self.count(estlist[i][j])
+					time2 = time.time() - time2
+					timelist[i] = [time1,time2,i]
 					estlist[i] = [max(estlist[i]),len(estlist[i]),i]
 			else:
 				estlist[i] = [0,0,i]
+		print(timelist)
 		estlist.sort()
 		estlist.reverse()
 		print(estlist)
