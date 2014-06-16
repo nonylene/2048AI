@@ -134,7 +134,7 @@ def yaruze(url):
 			grid.move(random.randint(0,2),url)
 		elif 80<= re<500:
 			#実際に先読みするのはこれ+1回
-			grid.move(grid.nexs(3),url)
+			grid.move(grid.nexs(7),url)
 		elif 500<= re <800:
 			grid.move(grid.nexs(4),url)
 		else:

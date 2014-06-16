@@ -11,13 +11,14 @@ class Turn:
 			zeroc = 0
 			while 0 in gridt[i]:
 				gridt[i].remove(0)
-			if len(gridt[i]) != 0:
-				for j in range(0,len(gridt[i])-1):
-					if gridt[i][len(gridt[i])-j-1] == gridt[i][len(gridt[i])-j-2] :
-						gridt[i][len(gridt[i])-j-2] = gridt[i][len(gridt[i])-j-1] * 2
-						gridt[i].pop(len(gridt[i])-j-1)
+			le = len(gridt[i])
+			if le != 0:
+				for j in range(0,le-1):
+					if gridt[i][le-j-1] == gridt[i][le-j-2] :
+						gridt[i][le-j-2] = gridt[i][le-j-1] * 2
+						gridt[i].pop(le-j-1)
 						#ここで2048用の独自の処理を加える。2240や2244の時の対策。
-						if len(gridt[i]) - j > 2 and gridt[i][0] == gridt[i][1]:
+						if le - j > 2 and gridt[i][0] == gridt[i][1]:
 							gridt[i][0] = gridt[i][1]*2
 							gridt[i].pop(1)
 							break
@@ -38,12 +39,13 @@ class Turn:
 			zeroc = 0
 			while 0 in gridt[i]:
 				gridt[i].remove(0)
-			if len(gridt[i]) != 0:
-				for j in range(0,len(gridt[i])-1):
+			le = len(gridt[i])
+			if le != 0:
+				for j in range(0,le-1):
 					if gridt[i][j] == gridt[i][j+1] :
 						gridt[i][j] = gridt[i][j] * 2
 						gridt[i].pop(j+1) 
-						if len(gridt[i])-j > 2 and gridt[i][j+1] == gridt[i][j+2]:
+						if le-j > 2 and gridt[i][j+1] == gridt[i][j+2]:
 							gridt[i][j+1] = gridt[i][j+2]*2
 							gridt[i].pop(j+2)
 							break
@@ -70,12 +72,13 @@ class Turn:
 			zeroc = 0
 			while 0 in gridtt[i]:
 				gridtt[i].remove(0)
-			if len(gridtt[i]) != 0:
-				for j in range(0,len(gridtt[i])-1):
+			le = len(gridtt[i])
+			if le != 0:
+				for j in range(0,le-1):
 					if gridtt[i][j] == gridtt[i][j+1] :
 						gridtt[i][j] = gridtt[i][j] * 2
 						gridtt[i].pop(j+1) 
-						if len(gridtt[i])-j > 2 and gridtt[i][j+1] == gridtt[i][j+2]:
+						if le-j > 2 and gridtt[i][j+1] == gridtt[i][j+2]:
 							gridtt[i][j+1] = gridtt[i][j+2]*2
 							gridtt[i].pop(j+2)
 							break
@@ -107,13 +110,14 @@ class Turn:
 			zeroc = 0
 			while 0 in gridtt[i]:
 				gridtt[i].remove(0)
-			if len(gridtt[i]) != 0:
-				for j in range(0,len(gridtt[i])-1):
+			le = len(gridtt[i])
+			if le != 0:
+				for j in range(0,le-1):
 					if gridtt[i][j] == gridtt[i][j+1] :
 						gridtt[i][j+1] = gridtt[i][j] * 2
 						gridtt[i].pop(j)
 						#ここで2048用の独自の処理を加える。2240や2244の時の対策。
-						if len(gridtt[i])-j > 2 and gridtt[i][j+1] == gridtt[i][j+2]:
+						if le-j > 2 and gridtt[i][j+1] == gridtt[i][j+2]:
 							gridtt[i][j+1] = gridtt[i][j+2]*2
 							gridtt[i].pop(j+2)
 							break
